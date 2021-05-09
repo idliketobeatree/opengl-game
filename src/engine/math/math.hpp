@@ -11,10 +11,10 @@ template <typename T>
 struct Vector3 {
     T x,y,z;
 
-    inline Vector3<T> dot(Vector3 &other) const {
+    inline Vector3<T> dot(const Vector3<T> &other) const {
         return {this->x * other.x, this->y * other.y, this->z * other.z};
     }
-    inline Vector3<T> cross(Vector3 &other) const {
+    inline Vector3<T> cross(const Vector3<T> &other) const {
         return {
                 this->y * other.z - this->z * other.y,
                 this->z * other.x - this->x * other.z,
@@ -22,20 +22,20 @@ struct Vector3 {
         };
     }
 
-    Vector3 operator +(const Vector3 &other) const {
+    Vector3<T> operator +(const Vector3<T> &other) const {
         return {
                 this->x + other.x,
                 this->y + other.y,
                 this->z + other.z
         };
     }
-    void operator +=(const Vector3 &other) {
+    void operator +=(const Vector3<T> &other) {
         this->x += other.x;
         this->y += other.y;
         this->z += other.z;
     }
 
-    Vector3 operator *(T scalar) const {
+    Vector3<T> operator *(const T scalar) const {
         return {
                 this->x * scalar,
                 this->y * scalar,
@@ -47,27 +47,27 @@ struct Vector3 {
         this->y *= scalar;
         this->z *= scalar;
     }
-    friend Vector3 operator *(const T scalar, const Vector3 &vector) {
+    friend Vector3<T> operator *(const T scalar, const Vector3<T> &vector) {
         return vector * scalar;
     }
 
-    Vector3 operator -(const Vector3 &other) const {
+    Vector3<T> operator -(const Vector3<T> &other) const {
         return {
             this->x - other.x,
             this->y - other.y,
             this->z - other.z
         };
     }
-    void operator -=(const Vector3 &other) {
+    void operator -=(const Vector3<T> &other) {
         this->x -= other.x;
         this->y -= other.y;
         this->z -= other.z;
     }
 
-    static inline Vector3<T> cross(Vector3<T> &a, Vector3<T> &b) {
+    static inline Vector3<T> cross(const Vector3<T> &a, const Vector3<T> &b) {
         return a.cross(b);
     }
-    static inline Vector3<T> dot(Vector3<T> &a, Vector3<T> &b) {
+    static inline Vector3<T> dot(const Vector3<T> &a, const  Vector3<T> &b) {
         return a.dot(b);
     }
 };
@@ -140,9 +140,21 @@ struct Matrix4 {
         return elems[i];
     }
 
+    static Matrix4<T> identity() {
+        return {
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        };
+    }
+
     operator T* () {
         return elems;
     }
 };
 
-typedef Vector3<float> Direction;
+typedef Vector3<float> Vector3f;
+typedef Vector3<double> Vector3d;
+
+const static Vector3f UP{0,1,0};

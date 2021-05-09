@@ -8,13 +8,17 @@
 void GameRenderer::render(double dt) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Matrix4<GLdouble> vp = camera.view * camera.projection;
-    glUniformMatrix4dv(vpLoc, 1, GL_FALSE, camera.view);
+    Matrix4<GLfloat> vp = camera.view*camera.projection;
+    glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
 
-//    info("\n%.1f %.1f %.1f %.1f\n%.1f %.1f %.1f %.1f\n%.1f %.1f %.1f %.1f\n%.1f %.1f %.1f %.1f",
-//         camera.view[0], camera.view[1], camera.view[2], camera.view[3], camera.view[4], camera.view[5], camera.view[6],
-//         camera.view[7], camera.view[8], camera.view[9], camera.view[10], camera.view[11], camera.view[12], camera.view[13],
-//         camera.view[14], camera.view[15]);
+//    info("\n%.1f %.1f %.1f %.1f"
+//         "\n%.1f %.1f %.1f %.1f"
+//         "\n%.1f %.1f %.1f %.1f"
+//         "\n%.1f %.1f %.1f %.1f",
+//         vp[0],  vp[1],  vp[2],  vp[3],
+//         vp[4],  vp[5],  vp[6],  vp[7],
+//         vp[8],  vp[9],  vp[10], vp[11],
+//         vp[12], vp[13], vp[14], vp[15]);
     glDrawArrays(GL_TRIANGLES, 0, 21);
 }
 

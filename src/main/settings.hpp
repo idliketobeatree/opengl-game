@@ -1,9 +1,9 @@
 #pragma once
 
 namespace settings {
-    double fov = 1.570796;
+    double fov = 0.5;
     double near = 0.1;
     double far = 2048;
 
-    double sensitivity = 1;
+    double sensitivity = 0.005;
 }

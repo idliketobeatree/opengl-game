@@ -65,6 +65,7 @@ int main() {
 
     /// Game renderer setup
     gameRenderer.setupRender();
+    camera.setup();
 
     /// Main loop
 

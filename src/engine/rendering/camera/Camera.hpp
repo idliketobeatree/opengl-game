@@ -5,7 +5,7 @@
 
 class Camera {
 public:
-    Matrix4<GLdouble> view, projection;
+    Matrix4<GLfloat> view, projection;
 
     Vector3<GLfloat> position;
     Vector3<GLfloat> forward, up, right;
@@ -15,6 +15,8 @@ public:
 
     Camera();
     Camera(Vector3<GLfloat> position, GLdouble pitch, GLdouble yaw, GLdouble roll);
+
+    void setup();
 
     void processInput(double dt);
 

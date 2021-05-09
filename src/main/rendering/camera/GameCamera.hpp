@@ -4,10 +4,12 @@
 
 class GameCamera: public Camera {
 protected:
-    double lastX, lastY;
-    int lastWindowWidth, lastWindowHeight;
+    double mouseX, mouseY, lastX, lastY;
+    int windowWidth, windowHeight, lastWindowWidth, lastWindowHeight;
 public:
     GameCamera();
+
+    void setup();
 
     void processInput(double dt);
 
