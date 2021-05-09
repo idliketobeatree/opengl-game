@@ -15,7 +15,7 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
 int main() {
     changeLevel(-127);
     info("My custom OpenGL engine/game :)");
-    info("Github/Meowy1227 | Unlicense");
+    info("Github/MeowyAsh | Unlicense");
     line();
 
     /// GLFW stuff
