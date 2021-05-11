@@ -10,7 +10,9 @@ protected:
     VAO vao;
     VBO vbo;
 
-    UniformLoc vpLoc;
+//    UniformLoc vpLoc;
+    UniformLoc viewLoc;
+    UniformLoc projectionLoc;
 public:
     void setupRender();
     void render(double dt);

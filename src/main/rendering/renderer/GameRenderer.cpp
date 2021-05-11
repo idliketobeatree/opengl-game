@@ -8,8 +8,10 @@
 void GameRenderer::render(double dt) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Matrix4<GLfloat> vp = camera.view*camera.projection;
-    glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
+//    Matrix4<GLfloat> vp = camera.view*camera.projection;
+//    glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, camera.view);
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, camera.projection);
 
 //    info("\n%.1f %.1f %.1f %.1f"
 //         "\n%.1f %.1f %.1f %.1f"
@@ -67,5 +69,7 @@ void GameRenderer::setupRender() {
 
     glUseProgram(program);
 
-    vpLoc = glGetUniformLocation(program, "vp");
+//    vpLoc = glGetUniformLocation(program, "vp");
+    viewLoc = glGetUniformLocation(program, "view");
+    projectionLoc = glGetUniformLocation(program, "projection");
 }

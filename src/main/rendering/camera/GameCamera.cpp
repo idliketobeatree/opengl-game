@@ -4,7 +4,7 @@
 #include <settings.hpp>
 #include <engine/logging/logging.hpp>
 
-GameCamera::GameCamera(): Camera(Vector3<GLfloat>{0,0,-3}, 0, 0, 0) {
+GameCamera::GameCamera(): Camera(Vector3<GLfloat>{0,0,-30}, 0, 0, 0) {
 }
 
 void GameCamera::setup() {
@@ -27,19 +27,19 @@ void GameCamera::processInput(double dt) {
         cameraSpeed *= 2;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        position += Vector3f{forward.x, 0, forward.z} * cameraSpeed;
+        position += Vector3f{zAxis.x, 0, zAxis.z} * cameraSpeed;
         updateView = true;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        position -= Vector3f{forward.x, 0, forward.z} * cameraSpeed;
+        position -= Vector3f{zAxis.x, 0, zAxis.z} * cameraSpeed;
         updateView = true;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        position -= Vector3f{right.x, 0, right.z} * cameraSpeed;
+        position -= Vector3f{xAxis.x, 0, xAxis.z} * cameraSpeed;
         updateView = true;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        position += Vector3f{right.x, 0, right.z} * cameraSpeed;
+        position += Vector3f{xAxis.x, 0, xAxis.z} * cameraSpeed;
         updateView = true;
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -65,10 +65,6 @@ void GameCamera::processInput(double dt) {
         if (pitch < -TAU / 4)
             pitch = -TAU / 4;
 
-        forward.x = cos(yaw) * cos(pitch);
-        forward.y = sin(pitch);
-        forward.z = sin(yaw) * cos(pitch);
-
         lastX = mouseX;
         lastY = mouseY;
 
@@ -92,24 +88,13 @@ void GameCamera::updateView() {
     GLfloat cosYaw   = cos(yaw);
     GLfloat sinYaw   = sin(yaw);
 
-    /// local X
-    right = {
-            -sinYaw,
-            cosYaw,
-            0
-    };
-    /// local Y
-    up = {
-            -sinPitch*cosYaw,
-            -sinPitch*sinYaw,
-            cosPitch
-    };
-    /// local Z
-    forward = {
-            cosPitch * cosYaw,
-            cosPitch * sinYaw,
-            sinPitch
-    };
+    zAxis = { cosYaw * cosPitch, sinPitch, sinYaw * cosPitch };
+//    yAxis = { sinYaw * sinPitch, cosPitch, cosYaw * sinPitch };
+//    xAxis = { cosYaw * cosPitch, sinPitch, sinYaw * cosPitch};
+
+    xAxis = Vector3f::cross(UP, zAxis);
+    yAxis = Vector3f::cross(zAxis, xAxis);
+
     debug("\nright:    %.1f, %.1f, %.1f, %.1f,\n"
           "up:       %.1f, %.1f, %.1f, %.1f,\n"
           "forward:  %.1f, %.1f, %.1f, %.1f,\n"
@@ -119,20 +104,51 @@ void GameCamera::updateView() {
           view[8],  view[9],  view[10], view[11],
           view[12], view[13], view[14], view[15]
           );
-    view = {
-            right.x,    right.y,    right.z, 0,
-            up.x,       up.y,       up.z, 0,
-            forward.x,  forward.y,  forward.z, 0,
-            position.x, position.y, position.z, 1
-    };
+//    view = {
+//            xAxis.x,                         yAxis.x,                         zAxis.x,                         0,
+//            xAxis.y,                         yAxis.y,                         zAxis.y,                         0,
+//            xAxis.z,                         yAxis.z,                         zAxis.z,                         0,
+//            -Vector3f::dot(xAxis, position), -Vector3f::dot(yAxis, position), -Vector3f::dot(zAxis, position), 1
+//    };
+//    view = {1,0,0,position.x,
+//            0,1,0,position.y,
+//            0,0,1,position.z,
+//            0,0,0,1};
+    view = {1,0,0, 0,
+            0,1,0, 0,
+            0,0,1, 0,
+            position.x,position.y,position.z,1};
+//    view = {
+//            xAxis.x, xAxis.y, xAxis.z, -Vector3f::dot(xAxis, position),
+//            yAxis.x, yAxis.y, yAxis.z, -Vector3f::dot(yAxis, position),
+//            zAxis.x, zAxis.y, zAxis.z, -Vector3f::dot(zAxis, position),
+//            0, 0, 0, 1
+//    };
 }
 void GameCamera::updateProjection() {
     const GLfloat tanHalfFovy = tan(settings::fov / 2);
     const GLfloat aspect = windowWidth / windowHeight;
 
-    projection[0] = 1 / (aspect * tanHalfFovy);
-    projection[5] = 1 / tanHalfFovy;
-    projection[10] = - (settings::far + settings::near) / (settings::far - settings::near);
-    projection[14] = -1;
-    projection[11] = -(2 * settings::far * settings::near) / (settings::far - settings::near);
+
+    projection = {
+            1 / (aspect * tanHalfFovy),
+            0,
+            0,
+            0,
+
+            0,
+            1/tanHalfFovy,
+            0,
+            0,
+
+            0,
+            0,
+            (float)(-(settings::far + settings::near) / (settings::far - settings::near)),
+            (float)(-(2 * settings::far * settings::near) / (settings::far - settings::near)),
+
+            0,
+            0,
+            -1,
+            0
+    };
 }
