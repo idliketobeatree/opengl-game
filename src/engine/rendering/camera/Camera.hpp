@@ -8,7 +8,7 @@ public:
     Matrix4<GLfloat> view, projection;
 
     Vector3<GLfloat> position;
-    Vector3<GLfloat> forward, up, right;
+    Vector3<GLfloat> direction = Vector3<GLfloat>{0,0,-1};
 
     /// TODO: quaternions or whatever I guess just make it better lol
     GLdouble pitch, yaw, roll;

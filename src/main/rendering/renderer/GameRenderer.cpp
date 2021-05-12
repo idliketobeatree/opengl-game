@@ -8,7 +8,8 @@
 void GameRenderer::render(double dt) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Matrix4<GLfloat> vp = camera.view*camera.projection;
+    Matrix4<GLfloat> vp = camera.view *camera.projection;
+
     glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
 
 //    info("\n%.1f %.1f %.1f %.1f"

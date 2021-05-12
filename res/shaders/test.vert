@@ -9,7 +9,7 @@ uniform mat4 vp;
 #define distance 3
 
 void main() {
-    gl_Position = vec4(position.x, position.y, position.z, 1.0)*vp;
+    gl_Position = vp* vec4(position.x, position.y, position.z, 1.0);
 //    gl_Position = vec4(position.x, position.y, position.z, 1.0);
 //    vertexColor = vec4(
 //    ((distance-gl_Position.z)/distance)*color.r,
