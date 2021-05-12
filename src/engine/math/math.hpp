@@ -176,4 +176,7 @@ struct Matrix4 {
 typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
 
+typedef Matrix4<float> Matrix4f;
+typedef Matrix4<double> Matrix4d;
+
 const static Vector3f UP{0,1,0};

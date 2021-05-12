@@ -12,14 +12,6 @@ void GameRenderer::render(double dt) {
 
     glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
 
-//    info("\n%.1f %.1f %.1f %.1f"
-//         "\n%.1f %.1f %.1f %.1f"
-//         "\n%.1f %.1f %.1f %.1f"
-//         "\n%.1f %.1f %.1f %.1f",
-//         vp[0],  vp[1],  vp[2],  vp[3],
-//         vp[4],  vp[5],  vp[6],  vp[7],
-//         vp[8],  vp[9],  vp[10], vp[11],
-//         vp[12], vp[13], vp[14], vp[15]);
     glDrawArrays(GL_TRIANGLES, 0, 21);
 }
 

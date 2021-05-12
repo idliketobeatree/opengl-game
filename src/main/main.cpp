@@ -39,14 +39,7 @@ int main() {
 
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
-    /// GLEW init
-
-//    glewExperimental = true; // Needed for core profile
-//    if (glewInit() != GLEW_OK) {
-//        fatal("Failed to initialize GLEW :(");
-//        glfwTerminate();
-//        return -1;
-//    }
+    /// GLAD init
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -58,7 +51,6 @@ int main() {
     straightSeparator();
     info("OpenGL version: %s", glGetString(GL_VERSION));
     info("GLFW version:   %s", glfwGetVersionString());
-//    info("GLEW version:   %s", glewGetString(GLEW_VERSION));
 //    info("GLAD version:   %s", GLAD_VERSION);
     straightSeparator();
     line();
