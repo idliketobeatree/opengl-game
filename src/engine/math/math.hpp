@@ -9,10 +9,10 @@
 
 template <typename T>
 struct Vector3 {
-    T x,y,z;
+    T x{},y{},z{};
 
-    inline Vector3<T> dot(const Vector3<T> &other) const {
-        return {this->x * other.x, this->y * other.y, this->z * other.z};
+    inline T dot(const Vector3<T> &other) const {
+        return this->x * other.x + this->y * other.y + this->z * other.z;
     }
     inline Vector3<T> cross(const Vector3<T> &other) const {
         return {
@@ -69,6 +69,18 @@ struct Vector3 {
     }
     static inline Vector3<T> dot(const Vector3<T> &a, const  Vector3<T> &b) {
         return a.dot(b);
+    }
+    static inline Vector3<T> normalize(const Vector3<T> &a) {
+        Vector3<T> out;
+        T mag = a.magnitude();
+        out.x = a.x/mag;
+        out.y = a.y/mag;
+        out.z = a.z/mag;
+        return out;
+    }
+    inline T magnitude() const {
+        T sum = (x * x) + (y * y) + (z * z);
+        return sqrt(sum);
     }
 };
 
@@ -139,7 +151,14 @@ struct Matrix4 {
     T& operator [](uint_fast8_t i) {
         return elems[i];
     }
-
+    Matrix4<T> transpose() const {
+        return Matrix4<T>{
+            elems[0],  elems[4],  elems[8],  elems[12],
+            elems[1],  elems[5],  elems[9],  elems[13],
+            elems[2],  elems[6],  elems[10], elems[14],
+            elems[3],  elems[7],  elems[11], elems[15],
+        };
+    }
     static Matrix4<T> identity() {
         return {
             1, 0, 0, 0,
