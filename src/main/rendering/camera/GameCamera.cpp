@@ -2,7 +2,7 @@
 
 #include <engine/rendering/rendering.hpp>
 #include <settings.hpp>
-#include <engine/logging/logging.hpp>
+#include <logging/logging.hpp>
 
 GameCamera::GameCamera(): Camera(Vector3f{0,0,3}, 0, 0, 0) {
 }

@@ -1,6 +1,6 @@
 #include "Shader.hpp"
 
-#include <engine/logging/logging.hpp>
+#include <logging/logging.hpp>
 
 Shader::Shader() {}
 Shader::Shader(GLenum type, const char* path): type(type) {

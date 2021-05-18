@@ -1,12 +1,11 @@
 #pragma once
-
-#include <engine/rendering/rendering.hpp>
+#include <engine/rendering/renderer/Renderer.hpp>
 #include <engine/rendering/shader/ShaderProgram.hpp>
 
-class GameRenderer : Renderer {
-protected:
+class DebugRenderer: public Renderer {
+private:
     ShaderProgram program;
-    UniformLoc vpLoc;
+    UniformLoc projLoc;
 
     VAO vao;
     VBO vbo;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <engine/math/math.hpp>
+#include <math/math.hpp>
 #include <engine/rendering/typedefs.hpp>
 
 class Camera {

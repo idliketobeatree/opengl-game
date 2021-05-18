@@ -2,7 +2,7 @@
 
 #include <stdarg.h>
 
-#include <engine/logging/logging.hpp>
+#include <logging/logging.hpp>
 
 ShaderProgram::ShaderProgram(ShaderID vertex, ShaderID fragment) {
     createProgram();

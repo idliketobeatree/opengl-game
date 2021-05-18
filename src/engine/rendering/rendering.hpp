@@ -7,6 +7,9 @@
 
 #include <engine/rendering/window.hpp>
 #include <engine/rendering/renderer/Renderer.hpp>
+#include <engine/rendering/shader/ShaderProgram.hpp>
+#include <engine/rendering/shader/Shader.hpp>
+#include <engine/rendering/camera/Camera.hpp>
 
 #include "typedefs.hpp"
 

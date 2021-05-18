@@ -1,18 +1,17 @@
 #include "GameRenderer.hpp"
 
-#include <engine/logging/logging.hpp>
-
-#include <engine/math/math.hpp>
+#include <math/math.hpp>
 #include <rendering/rendering.hpp>
 
 void GameRenderer::render(double dt) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(program);
+    glBindVertexArray(vao);
 
-    Matrix4<GLfloat> vp = camera.view *camera.projection;
-
+    Matrix4f vp = camera.view * camera.projection;
     glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
 
-    glDrawArrays(GL_TRIANGLES, 0, 21);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void GameRenderer::setupRender() {
@@ -27,10 +26,9 @@ void GameRenderer::setupRender() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-//    glEnable(GL_CULL_FACE);
-//    glCullFace(GL_FRONT);
-//    glFrontFace(GL_CCW);
-
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glFrontFace(GL_CCW);
 
     Shader vert(GL_VERTEX_SHADER, "res/shaders/test.vert");
     Shader frag(GL_FRAGMENT_SHADER, "res/shaders/test.frag");
@@ -57,8 +55,6 @@ void GameRenderer::setupRender() {
     // colors
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    glUseProgram(program);
 
     vpLoc = glGetUniformLocation(program, "vp");
 }
