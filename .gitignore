@@ -1,0 +1,5 @@
+# Project exclude paths
+/cmake-build-debug/
+/lib
+# temporary place i'm putting my executables-don't wanna upload those :p
+/Game
