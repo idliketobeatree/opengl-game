@@ -11,7 +11,6 @@
 #define TWO_PI 6.2831853071795864769252
 
 /// Vectors
-
 typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
 
@@ -27,8 +26,12 @@ typedef Vector3<int32_t> Vector3i32;
 typedef Vector3<int64_t> Vector3i64;
 typedef Vector3i32 Vector3i;
 
-/// Matrices
+/// Colors
+typedef Vector3<float> Color3f;
+typedef Vector3<double> Color3d;
+typedef Vector3<uint8_t> Color3u8;
 
+/// Matrices
 typedef Matrix4<float> Matrix4f;
 typedef Matrix4<double> Matrix4d;
 
