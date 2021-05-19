@@ -11,7 +11,7 @@
 Window window(640, 480, "OpenGL Window");
 GameRenderer gameRenderer;
 DebugRenderer debugRenderer;
-ChunkRenderer chunkRenderer(new Chunk({0, 0, 0}));
+ChunkRenderer chunkRenderer(new Chunk({0, 0, 0}), 0.5f);
 GameCamera camera;
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
@@ -69,24 +69,11 @@ int main() {
     for(pos.x = 0; pos.x < CHUNK_SIZE; pos.x++) {
         for(pos.y = 0; pos.y < CHUNK_SIZE; pos.y++) {
             for(pos.z = 0; pos.z < CHUNK_SIZE; pos.z++) {
-//                float radius = CHUNK_SIZE/2.0f;
-//                float xDist = radius - pos.x;
-//                float yDist = radius - pos.y;
-//                float zDist = radius - pos.z;
-//                float noiseV = sqrt (xDist*xDist + yDist*yDist + zDist*zDist);
-//                if(noiseV < radius)
-//                    chunkRenderer.chunk->setBlock(pos, Block{DIRT, noiseV});
-//                else
-//                    chunkRenderer.chunk->setBlock(pos, Block{AIR, noiseV});
-                float noiseV = noise.noise3f(pos.x/50.0f, pos.y/50.0f, pos.z/50.0f);
-                if(noiseV > 0.5)
-                    chunkRenderer.chunk->setBlock(pos, Block{DIRT, 1});
+                float noiseV = noise.noise3f(pos.x/10.0f, pos.y/10.0f, pos.z/10.0f);
+                if(noiseV > chunkRenderer.noiseThreshold)
+                    chunkRenderer.chunk->setBlock(pos, Block{DIRT, noiseV});
                 else
-                    chunkRenderer.chunk->setBlock(pos, Block{AIR, 1});
-//                if(pos.x/4 % 2 == 0)
-//                    chunkRenderer.chunk->setBlock(pos, Block{DIRT, 1.0f});
-//                else
-//                    chunkRenderer.chunk->setBlock(pos, Block{AIR, 1.0f});
+                    chunkRenderer.chunk->setBlock(pos, Block{AIR, noiseV});
             }
         }
     }

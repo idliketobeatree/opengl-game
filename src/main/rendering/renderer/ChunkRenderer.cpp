@@ -160,12 +160,12 @@ void ChunkRenderer::generateMesh() {
         i -= CHUNK_SIZE2;
     }
 }
-ChunkRenderer::ChunkRenderer(Chunk *chunk): chunk(chunk), vertList(new Vector3f[12]) {}
+ChunkRenderer::ChunkRenderer(Chunk *chunk, float noiseThreshold): chunk(chunk), noiseThreshold(noiseThreshold), vertList(new Vector3f[12]) {}
 /**
  * Find where to put the vertex
 */
-Vector3f ChunkRenderer::vertexInterp(Vector3f a, Vector3f b, float ia, float ib) {
-    return (a * ia + b * ib) / (ia + ib);
+Vector3f ChunkRenderer::vertexInterp(Vector3f a, Vector3f b, float ia, float ib) const {
+    return a + (this->noiseThreshold - ia) / (ib - ia) * (b-a);
 }
 uint8_t** ChunkRenderer::triTable = new uint8_t*[256]{
         new uint8_t[]{0},

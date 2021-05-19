@@ -19,7 +19,9 @@ public:
     VBO vbo;
     EBO ebo;
 
-    ChunkRenderer(Chunk *chunk);
+    float noiseThreshold;
+
+    ChunkRenderer(Chunk *chunk, float noiseThreshold);
 
     void generateMesh();
 
@@ -28,5 +30,5 @@ public:
 
     void genMesh();
 
-    static Vector3f vertexInterp(Vector3f a, Vector3f b, float ia, float ib);
+    Vector3f vertexInterp(Vector3f a, Vector3f b, float ia, float ib) const;
 };
