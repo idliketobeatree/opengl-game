@@ -11,3 +11,5 @@ typedef GLuint IBO;
 typedef GLuint ShaderProgramID;
 typedef GLuint ShaderID;
 typedef GLuint UniformLoc;
+
+typedef float *VertexArray;

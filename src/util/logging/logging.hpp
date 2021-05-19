@@ -15,10 +15,10 @@
 #define STRAIGHT_SEPARATOR "----------------------------------------------------------------"
 #define WIGGLY_SEPARATOR   "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
-#define debug
-#define info
-#define warn
-#define error
+// #define debug
+// #define info
+// #define warn
+// #define error
 
 struct Logger {
     const char *name;
@@ -69,9 +69,9 @@ static inline void stdoutCallback(LogEvent *ev) {
 const inline void log(Logger logger, const char *file, int line, const char *fmt, ...) {
     LogEvent ev{
             .logger = &logger,
+            .fmt    = fmt,
             .file   = file,
             .line   = line,
-            .fmt    = fmt,
     };
     if (logger.level > level) {
         initEvent(&ev, stdout);

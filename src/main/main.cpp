@@ -1,10 +1,17 @@
 #include <rendering/rendering.hpp>
-#include <engine/logging/logging.hpp>
+#include <logging/logging.hpp>
+#include <rendering/renderer/DebugRenderer.hpp>
+#include <rendering/renderer/ChunkRenderer.hpp>
 
-#include <engine/math/math.hpp>
+#include <math/math.hpp>
+#include <world/block/blocks.hpp>
+
+#include <math/Noise.hpp>
 
 Window window(640, 480, "OpenGL Window");
 GameRenderer gameRenderer;
+DebugRenderer debugRenderer;
+ChunkRenderer chunkRenderer(new Chunk({0, 0, 0}), 0.5f);
 GameCamera camera;
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
@@ -39,14 +46,7 @@ int main() {
 
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
-    /// GLEW init
-
-//    glewExperimental = true; // Needed for core profile
-//    if (glewInit() != GLEW_OK) {
-//        fatal("Failed to initialize GLEW :(");
-//        glfwTerminate();
-//        return -1;
-//    }
+    /// GLAD init
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -58,13 +58,29 @@ int main() {
     straightSeparator();
     info("OpenGL version: %s", glGetString(GL_VERSION));
     info("GLFW version:   %s", glfwGetVersionString());
-//    info("GLEW version:   %s", glewGetString(GLEW_VERSION));
-//    info("GLAD version:   %s", GLAD_VERSION);
     straightSeparator();
     line();
 
-    /// Game renderer setup
+    info("%d", Chunk::getIndex({CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}));
+
+    /// get rendering set up
+    Vector3u8 pos;
+    Noise noise;
+    for(pos.x = 0; pos.x < CHUNK_SIZE; pos.x++) {
+        for(pos.y = 0; pos.y < CHUNK_SIZE; pos.y++) {
+            for(pos.z = 0; pos.z < CHUNK_SIZE; pos.z++) {
+                float noiseV = noise.noise3f(pos.x/10.0f, pos.y/10.0f, pos.z/10.0f);
+                if(noiseV > chunkRenderer.noiseThreshold)
+                    chunkRenderer.chunk->setBlock(pos, Block{DIRT, noiseV});
+                else
+                    chunkRenderer.chunk->setBlock(pos, Block{AIR, noiseV});
+            }
+        }
+    }
+
     gameRenderer.setupRender();
+    chunkRenderer.setupRender();
+    debugRenderer.setupRender();
     camera.setup();
 
     /// Main loop
@@ -76,6 +92,8 @@ int main() {
 
         camera.processInput(deltaTime);
         gameRenderer.render(deltaTime);
+        chunkRenderer.render(deltaTime);
+        debugRenderer.render(deltaTime);
 
         frame++;
         deltaTime = glfwGetTime() - time;

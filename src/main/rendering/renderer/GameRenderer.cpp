@@ -1,27 +1,17 @@
 #include "GameRenderer.hpp"
 
-#include <engine/logging/logging.hpp>
-
-#include <engine/math/math.hpp>
+#include <math/math.hpp>
 #include <rendering/rendering.hpp>
 
 void GameRenderer::render(double dt) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(program);
+    glBindVertexArray(vao);
 
-//    Matrix4<GLfloat> vp = camera.view*camera.projection;
-//    glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, camera.view);
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, camera.projection);
+    Matrix4f vp = camera.view * camera.projection;
+    glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
 
-//    info("\n%.1f %.1f %.1f %.1f"
-//         "\n%.1f %.1f %.1f %.1f"
-//         "\n%.1f %.1f %.1f %.1f"
-//         "\n%.1f %.1f %.1f %.1f",
-//         vp[0],  vp[1],  vp[2],  vp[3],
-//         vp[4],  vp[5],  vp[6],  vp[7],
-//         vp[8],  vp[9],  vp[10], vp[11],
-//         vp[12], vp[13], vp[14], vp[15]);
-    glDrawArrays(GL_TRIANGLES, 0, 21);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void GameRenderer::setupRender() {
@@ -36,10 +26,9 @@ void GameRenderer::setupRender() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-//    glEnable(GL_CULL_FACE);
-//    glCullFace(GL_FRONT);
-//    glFrontFace(GL_CCW);
-
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glFrontFace(GL_CCW);
 
     Shader vert(GL_VERTEX_SHADER, "res/shaders/test.vert");
     Shader frag(GL_FRAGMENT_SHADER, "res/shaders/test.frag");
@@ -67,9 +56,5 @@ void GameRenderer::setupRender() {
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glUseProgram(program);
-
-//    vpLoc = glGetUniformLocation(program, "vp");
-    viewLoc = glGetUniformLocation(program, "view");
-    projectionLoc = glGetUniformLocation(program, "projection");
+    vpLoc = glGetUniformLocation(program, "vp");
 }
