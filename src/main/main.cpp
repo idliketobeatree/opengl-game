@@ -8,7 +8,7 @@
 
 #include <math/Noise.hpp>
 
-Window window(640, 480, "OpenGL Window");
+Window window(1680, 950, "OpenGL Window");
 GameRenderer gameRenderer;
 DebugRenderer debugRenderer;
 ChunkRenderer chunkRenderer(new Chunk({0, 0, 0}), 0.5f);
@@ -69,7 +69,8 @@ int main() {
     for(pos.x = 0; pos.x < CHUNK_SIZE; pos.x++) {
         for(pos.y = 0; pos.y < CHUNK_SIZE; pos.y++) {
             for(pos.z = 0; pos.z < CHUNK_SIZE; pos.z++) {
-                float noiseV = noise.noise3f(pos.x/10.0f, pos.y/10.0f, pos.z/10.0f);
+//                float noiseV = noise.noise3f(pos.x/16.0f, pos.y/16.0f, pos.z/16.0f);
+                float noiseV = noise.noise3f(pos.x/20.0f, pos.y/20.0f, pos.z/20.0f);
                 if(noiseV > chunkRenderer.noiseThreshold)
                     chunkRenderer.chunk->setBlock(pos, Block{DIRT, noiseV});
                 else

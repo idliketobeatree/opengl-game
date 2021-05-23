@@ -5,34 +5,75 @@
 #include <numeric>
 #include <iostream>
 
-#define V0 Vector3f{0, 0, 1}
-#define V1 Vector3f{1, 0, 1}
-#define V2 Vector3f{1, 0, 0}
-#define V3 Vector3f{0, 0, 0}
-#define V4 Vector3f{0, 1, 1}
-#define V5 Vector3f{1, 1, 1}
-#define V6 Vector3f{1, 1, 0}
-#define V7 Vector3f{0, 1, 0}
+#define V0  Vector3f{0, 0, 1}
+#define V1  Vector3f{1, 0, 1}
+#define V2  Vector3f{1, 0, 0}
+#define V3  Vector3f{0, 0, 0}
+#define V4  Vector3f{0, 1, 1}
+#define V5  Vector3f{1, 1, 1}
+#define V6  Vector3f{1, 1, 0}
+#define V7  Vector3f{0, 1, 0}
 
-#define v0 Chunk::getIndex({0, 0, 1})
-#define v1 Chunk::getIndex({1, 0, 1})
-#define v2 Chunk::getIndex({1, 0, 0})
-#define v3 Chunk::getIndex({0, 0, 0})
-#define v4 Chunk::getIndex({0, 1, 1})
-#define v5 Chunk::getIndex({1, 1, 1})
-#define v6 Chunk::getIndex({1, 1, 0})
-#define v7 Chunk::getIndex({0, 1, 0})
+#define G0  Vector3f{0, 0, 1}
+#define G1  Vector3f{1, 0, 1}
+#define G2  Vector3f{1, 0, 0}
+#define G3  Vector3f{0, 0, 0}
+#define G4  Vector3f{0, 1, 1}
+#define G5  Vector3f{1, 1, 1}
+#define G6  Vector3f{1, 1, 0}
+#define G7  Vector3f{0, 1, 0}
+
+#define v0  Chunk::getIndex({0, 0, 1})
+#define v1  Chunk::getIndex({1, 0, 1})
+#define v2  Chunk::getIndex({1, 0, 0})
+#define v3  Chunk::getIndex({0, 0, 0})
+#define v4  Chunk::getIndex({0, 1, 1})
+#define v5  Chunk::getIndex({1, 1, 1})
+#define v6  Chunk::getIndex({1, 1, 0})
+#define v7  Chunk::getIndex({0, 1, 0})
+
+#define e0  Chunk::getIndex({0, 0, 1})
+#define e1  Chunk::getIndex({1, 0, 0})
+#define e2  Chunk::getIndex({0, 0, 0})
+#define e3  Chunk::getIndex({0, 0, 0})
+#define e4  Chunk::getIndex({0, 1, 1})
+#define e5  Chunk::getIndex({1, 1, 0})
+#define e6  Chunk::getIndex({0, 1, 0})
+#define e7  Chunk::getIndex({0, 1, 0})
+#define e8  Chunk::getIndex({0, 0, 1})
+#define e9  Chunk::getIndex({1, 0, 1})
+#define e10 Chunk::getIndex({1, 0, 0})
+#define e11 Chunk::getIndex({0, 0, 0})
 
 void ChunkRenderer::render(double dt) {
     glUseProgram(program);
     glBindVertexArray(vao);
 
-    Matrix4f vp = camera.view * camera.projection;
-    glUniformMatrix4fv(vpLoc, 1, GL_FALSE, vp);
+    Matrix4f mvp = camera.view * camera.projection;
+    Vector3f ambient = {1, 1, 1};
+    Vector3f color = {1, 1, 1};
+    Vector3f lightPos = {20,100,20};
+//    Vector3f lightPos = {(float)sin(glfwGetTime())*50.0f,8,(float)cos(glfwGetTime())*50.0f};
+//    Vector3f lightPosa = camera.position;
+
+    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp);
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, camera.view);
+
+    glUniform3fv(ambientLightColorLoc, 1, ambient);
+    glUniform1f (ambientLightStrengthLoc, 0.05f);
+
+    glUniform3fv(lightPosLoc, 1, lightPos);
+    glUniform3fv(lightColorLoc, 1, color);
+    glUniform1f (lightStrengthLoc, 1.0f);
+
+    glUniform3fv(viewPosLoc, 1, camera.position);
 
     glDrawArrays(GL_TRIANGLES, 0, 1000000);
+//    glDrawArrays(GL_TRIANGLES, 0, 73);
 }
 void ChunkRenderer::setupRender() {
+    this->lightPos = {0,0,0};
+
     Shader vert(GL_VERTEX_SHADER, "res/shaders/chunk.vert");
     Shader frag(GL_FRAGMENT_SHADER, "res/shaders/chunk.frag");
 
@@ -44,6 +85,8 @@ void ChunkRenderer::setupRender() {
     vert.deleteShader();
     frag.deleteShader();
 
+    /// chunk
+
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
 
@@ -52,21 +95,35 @@ void ChunkRenderer::setupRender() {
     generateMesh();
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*21*CHUNK_SIZE3, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*27*CHUNK_SIZE3, vertices, GL_STATIC_DRAW);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9*6*6, verticesccc, GL_STATIC_DRAW);
 
     // coords
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
-    // colors
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (3 * sizeof(float)));
+    // normals
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    // colors
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) (6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
-    vpLoc = glGetUniformLocation(program, "vp");
+    mvpLoc = glGetUniformLocation(program, "u_mvp");
+    viewLoc = glGetUniformLocation(program, "u_view");
+
+    lightColorLoc = glGetUniformLocation(program, "u_lightColor");
+    lightPosLoc = glGetUniformLocation(program, "u_lightPos");
+    lightStrengthLoc = glGetUniformLocation(program, "u_lightStrength");
+
+    ambientLightColorLoc = glGetUniformLocation(program, "u_ambientLightColor");
+    ambientLightStrengthLoc = glGetUniformLocation(program, "u_ambientLightStrength");
+
+    viewPosLoc = glGetUniformLocation(program, "u_viewPos");
 }
 void ChunkRenderer::generateMesh() {
-    vertices = new float[CHUNK_SIZE3*21];
+    vertices = new float[CHUNK_SIZE3*27];
 
-    uint32_t i = 0; // voxel index
+    uint16_t i = 0; // voxel index
     uint32_t j = 0; // VA index
 
     Vector3f localPos;  // pos relative to chunk
@@ -75,9 +132,6 @@ void ChunkRenderer::generateMesh() {
         for (localPos.y = 0, globalPos.y = this->chunk->position.y; localPos.y < CHUNK_SIZE; localPos.y++, globalPos.y++, i += CHUNK_SIZE) {
             for (localPos.x = 0, globalPos.x = this->chunk->position.x; localPos.x < CHUNK_SIZE; localPos.x++, globalPos.x++, i++) {
                 uint8_t cubeIndex = 0b00000000;
-
-//                if(chunk->getBlock(i).type.ID == AIR.ID)
-//                    continue;
 
                 if (!Chunk::outOfBounds(i+v0) && chunk->getBlock(i + v0).type.ID != AIR.ID) cubeIndex |= 0b00000001;
                 if (!Chunk::outOfBounds(i+v1) && chunk->getBlock(i + v1).type.ID != AIR.ID) cubeIndex |= 0b00000010;
@@ -94,65 +148,110 @@ void ChunkRenderer::generateMesh() {
 
                 /* Find the vertices where the surface intersects the cube */
                 if (edgeTable[cubeIndex] & 0x0001)
-                    vertList[0] = vertexInterp(globalPos+V0, globalPos+V1,
-                            chunk->getBlock(i+v0).influence, chunk->getBlock(i+v1).influence);
+                    vertList3f[0] = vertexInterp(V0, V1,
+                                                 chunk->getBlock(i + v0).influence, chunk->getBlock(i + v1).influence);
                 if (edgeTable[cubeIndex] & 0x0002)
-                    vertList[1] = vertexInterp(globalPos+V1, globalPos+V2,
-                            chunk->getBlock(i+v1).influence, chunk->getBlock(i+v2).influence);
+                    vertList3f[1] = vertexInterp(V1, V2,
+                                                 chunk->getBlock(i+v1).influence, chunk->getBlock(i+v2).influence);
                 if (edgeTable[cubeIndex] & 0x0004)
-                    vertList[2] = vertexInterp(globalPos+V2, globalPos+V3,
-                            chunk->getBlock(i+v2).influence, chunk->getBlock(i+v3).influence);
+                    vertList3f[2] = vertexInterp(V2, V3,
+                                                 chunk->getBlock(i+v2).influence, chunk->getBlock(i+v3).influence);
                 if (edgeTable[cubeIndex] & 0x0008)
-                    vertList[3] = vertexInterp(globalPos+V3, globalPos+V0,
-                            chunk->getBlock(i+v3).influence, chunk->getBlock(i+v0).influence);
+                    vertList3f[3] = vertexInterp(V3, V0,
+                                                 chunk->getBlock(i+v3).influence, chunk->getBlock(i+v0).influence);
                 if (edgeTable[cubeIndex] & 0x0010)
-                    vertList[4] = vertexInterp(globalPos+V4, globalPos+V5,
-                            chunk->getBlock(i+v4).influence, chunk->getBlock(i+v5).influence);
+                    vertList3f[4] = vertexInterp(V4, V5,
+                                                 chunk->getBlock(i+v4).influence, chunk->getBlock(i+v5).influence);
                 if (edgeTable[cubeIndex] & 0x0020)
-                    vertList[5] = vertexInterp(globalPos+V5, globalPos+V6,
-                            chunk->getBlock(i+v5).influence, chunk->getBlock(i+v6).influence);
+                    vertList3f[5] = vertexInterp(V5, V6,
+                                                 chunk->getBlock(i+v5).influence, chunk->getBlock(i+v6).influence);
                 if (edgeTable[cubeIndex] & 0x0040)
-                    vertList[6] = vertexInterp(globalPos+V6, globalPos+V7,
-                            chunk->getBlock(i+v6).influence, chunk->getBlock(i+v7).influence);
+                    vertList3f[6] = vertexInterp(V6, V7,
+                                                 chunk->getBlock(i+v6).influence, chunk->getBlock(i+v7).influence);
                 if (edgeTable[cubeIndex] & 0x0080)
-                    vertList[7] = vertexInterp(globalPos+V7, globalPos+V4,
-                            chunk->getBlock(i+v7).influence, chunk->getBlock(i+v4).influence);
+                    vertList3f[7] = vertexInterp(V7, V4,
+                                                 chunk->getBlock(i+v7).influence, chunk->getBlock(i+v4).influence);
                 if (edgeTable[cubeIndex] & 0x0100)
-                    vertList[8] = vertexInterp(globalPos+V0, globalPos+V4,
-                            chunk->getBlock(i+v0).influence, chunk->getBlock(i+v4).influence);
+                    vertList3f[8] = vertexInterp(V0, V4,
+                                                 chunk->getBlock(i+v0).influence, chunk->getBlock(i+v4).influence);
                 if (edgeTable[cubeIndex] & 0x0200)
-                    vertList[9] = vertexInterp(globalPos+V1, globalPos+V5,
-                            chunk->getBlock(i+v1).influence, chunk->getBlock(i+v5).influence);
+                    vertList3f[9] = vertexInterp(V1, V5,
+                                                 chunk->getBlock(i+v1).influence, chunk->getBlock(i+v5).influence);
                 if (edgeTable[cubeIndex] & 0x0400)
-                    vertList[10] = vertexInterp(globalPos+V2, globalPos+V6,
-                            chunk->getBlock(i+v2).influence, chunk->getBlock(i+v6).influence);
+                    vertList3f[10] = vertexInterp(V2, V6,
+                                                  chunk->getBlock(i+v2).influence, chunk->getBlock(i+v6).influence);
                 if (edgeTable[cubeIndex] & 0x0800)
-                    vertList[11] = vertexInterp(globalPos+V3, globalPos+V7,
-                            chunk->getBlock(i+v3).influence, chunk->getBlock(i+v7).influence);
-                for (uint8_t k = 0; k < triTable[cubeIndex][0]; k += 3, j += 21) {
-                    vertices[j]    = vertList[triTable[cubeIndex][k + 1]].x;
-                    vertices[j+1]  = vertList[triTable[cubeIndex][k + 1]].y;
-                    vertices[j+2]  = vertList[triTable[cubeIndex][k + 1]].z;
-                    vertices[j+3]  = 1.0f;
-                    vertices[j+4]  = 0.0f;
-                    vertices[j+5]  = 0.0f;
+                    vertList3f[11] = vertexInterp(V3, V7,
+                                                  chunk->getBlock(i+v3).influence, chunk->getBlock(i+v7).influence);
+                for (uint8_t k = 0; k < triTable[cubeIndex][0]; k += 3, j += 27) {
+                    // position
+                    vertices[j]    = globalPos.x + vertList3f[triTable[cubeIndex][k + 1]].x;
+                    vertices[j+1]  = globalPos.y + vertList3f[triTable[cubeIndex][k + 1]].y;
+                    vertices[j+2]  = globalPos.z + vertList3f[triTable[cubeIndex][k + 1]].z;
+                    // normal
+                    vertices[j+3]  = gradInterp(
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 1]] - CHUNK_X).influence,
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 1]] + CHUNK_X).influence
+                            );
+                    vertices[j+4]  = gradInterp(
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 1]] - CHUNK_Y).influence,
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 1]] + CHUNK_Y).influence
+                            );
+                    vertices[j+5]  = gradInterp(
+                           chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 1]] - CHUNK_Z).influence,
+                           chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 1]] + CHUNK_Z).influence
+                           );
+
+                    // color
                     vertices[j+6]  = 1.0f;
+                    vertices[j+7]  = 1.0f;
+                    vertices[j+8]  = 1.0f;
 
-                    vertices[j+7]  = vertList[triTable[cubeIndex][k + 2]].x;
-                    vertices[j+8]  = vertList[triTable[cubeIndex][k + 2]].y;
-                    vertices[j+9]  = vertList[triTable[cubeIndex][k + 2]].z;
-                    vertices[j+10] = 0.0f;
-                    vertices[j+11] = 1.0f;
-                    vertices[j+12] = 0.0f;
-                    vertices[j+13] = 1.0f;
+                    // position
+                    vertices[j+9]  = globalPos.x + vertList3f[triTable[cubeIndex][k + 2]].x;
+                    vertices[j+10] = globalPos.y + vertList3f[triTable[cubeIndex][k + 2]].y;
+                    vertices[j+11] = globalPos.z + vertList3f[triTable[cubeIndex][k + 2]].z;
+                    // normal
+                    vertices[j+12] = gradInterp(
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 2]] - CHUNK_X).influence,
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 2]] + CHUNK_X).influence
+                            );
+                    vertices[j+13] = gradInterp(
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 2]] - CHUNK_Y).influence,
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 2]] + CHUNK_Y).influence
+                            );
+                    vertices[j+14] = gradInterp(
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 2]] - CHUNK_Z).influence,
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 2]] + CHUNK_Z).influence
+                            );
 
-                    vertices[j+14] = vertList[triTable[cubeIndex][k + 3]].x;
-                    vertices[j+15] = vertList[triTable[cubeIndex][k + 3]].y;
-                    vertices[j+16] = vertList[triTable[cubeIndex][k + 3]].z;
-                    vertices[j+17] = 0.0f;
-                    vertices[j+18] = 0.0f;
-                    vertices[j+19] = 1.0f;
-                    vertices[j+20] = 1.0f;
+                    // color
+                    vertices[j+15] = 1.0f;
+                    vertices[j+16] = 1.0f;
+                    vertices[j+17] = 1.0f;
+
+                    // position
+                    vertices[j+18] = globalPos.x + vertList3f[triTable[cubeIndex][k + 3]].x;
+                    vertices[j+19] = globalPos.y + vertList3f[triTable[cubeIndex][k + 3]].y;
+                    vertices[j+20] = globalPos.z + vertList3f[triTable[cubeIndex][k + 3]].z;
+                    // normal
+                    vertices[j+21] = gradInterp(
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 3]] - CHUNK_X).influence,
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 3]] + CHUNK_X).influence
+                            );
+                    vertices[j+22] = gradInterp(
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 3]] - CHUNK_Y).influence,
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 3]] + CHUNK_Y).influence
+                            );
+                    vertices[j+23] = gradInterp(
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 3]] - CHUNK_Z).influence,
+                            chunk->getBlock(i + vertListu[triTable[cubeIndex][k + 3]] + CHUNK_Z).influence
+                            );
+
+                    // color
+                    vertices[j+24] = 1.0f;
+                    vertices[j+25] = 1.0f;
+                    vertices[j+26] = 1.0f;
                 }
             }
             i -= CHUNK_SIZE;
@@ -160,13 +259,15 @@ void ChunkRenderer::generateMesh() {
         i -= CHUNK_SIZE2;
     }
 }
-ChunkRenderer::ChunkRenderer(Chunk *chunk, float noiseThreshold): chunk(chunk), noiseThreshold(noiseThreshold), vertList(new Vector3f[12]) {}
-/**
- * Find where to put the vertex
-*/
+ChunkRenderer::ChunkRenderer(Chunk *chunk, float noiseThreshold): chunk(chunk), noiseThreshold(noiseThreshold), vertList3f(new Vector3f[12]) {}
+
 Vector3f ChunkRenderer::vertexInterp(Vector3f a, Vector3f b, float ia, float ib) const {
     return a + (this->noiseThreshold - ia) / (ib - ia) * (b-a);
 }
+float ChunkRenderer::gradInterp(float a, float b) const {
+    return a-b;
+}
+uint16_t *ChunkRenderer::vertListu = new uint16_t [12] {e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11};
 uint8_t** ChunkRenderer::triTable = new uint8_t*[256]{
         new uint8_t[]{0},
         new uint8_t[]{3, 0, 8, 3},

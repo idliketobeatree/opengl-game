@@ -93,4 +93,8 @@ struct Vector3 {
         T sum = (x * x) + (y * y) + (z * z);
         return sqrt(sum);
     }
+
+    operator T* () {
+        return &x;
+    }
 };

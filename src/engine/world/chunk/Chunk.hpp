@@ -3,12 +3,13 @@
 #include <math/math.hpp>
 #include <engine/world/block/Block.hpp>
 
-//#define CHUNK_SIZE 16
-//#define CHUNK_SIZE2 256
-//#define CHUNK_SIZE3 4096
 #define CHUNK_SIZE 40
 #define CHUNK_SIZE2 1600
 #define CHUNK_SIZE3 64000
+
+#define CHUNK_X Chunk::getIndex({1,0,0})
+#define CHUNK_Y Chunk::getIndex({0,1,0})
+#define CHUNK_Z Chunk::getIndex({0,0,1})
 
 class Chunk {
 public:

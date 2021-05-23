@@ -1,14 +1,20 @@
 #version 330 core
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec4 color;
+layout (location = 0) in vec3 a_pos;
+layout (location = 1) in vec3 a_normal;
+layout (location = 2) in vec3 a_color;
 
-out vec4 vertexColor;
-out float depth;
+out vec3 pos;
+out vec3 normal;
+out vec3 color;
 
-uniform mat4 vp;
+uniform mat4 u_mvp;
+uniform mat4 u_view;
 
 void main() {
-    gl_Position = vp * vec4(position.x, position.y, position.z, 1.0);
-    depth = gl_Position.z;
-    vertexColor = color;
+    pos = a_pos;
+//    normal = transpose(inverse(mat3(u_view))) * a_normal;
+    normal = a_normal;
+    color = a_color;
+
+    gl_Position = u_mvp * vec4(a_pos, 1.0);
 }
