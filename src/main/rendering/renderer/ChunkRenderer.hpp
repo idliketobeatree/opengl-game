@@ -12,6 +12,7 @@ protected:
     viewPosLoc;
 
     Vector3f *vertList3f;
+    Vector3f *gradList3f;
 
     static uint16_t *vertListu;
     static uint16_t *edgeTable;
@@ -37,5 +38,8 @@ public:
     void genMesh();
 
     Vector3f vertexInterp(Vector3f a, Vector3f b, float ia, float ib) const;
-    float gradInterp(float a, float b) const;
+//    Vector3f gradInterp(uint16_t i, Vector3f offset) const;
+    Vector3f gradInterp(uint16_t i, Vector3f offset) const;
+    Vector3f gradInterpNoise(Vector3f pos) const;
+//    float gradInterp(float a, float b, float c) const;
 };

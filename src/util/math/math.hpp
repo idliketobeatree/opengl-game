@@ -48,3 +48,6 @@ typedef Matrix4<int64_t> Matrix4i64;
 typedef Matrix4i32 Matrix4i;
 
 const static Vector3f UP{0,1,0};
+const static Vector3f ONE{1,1,1};
+
+float lerp(float a, float b, float c);

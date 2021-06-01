@@ -273,3 +273,7 @@ float Noise::noise3f(float x, float y, float z) {
     /// The result is scaled to stay just inside [-1,1]
     return 32.0f*(n0 + n1 + n2 + n3);
 }
+
+float lerp(float a, float b, float c) {
+    return a + c * (b-a);
+}

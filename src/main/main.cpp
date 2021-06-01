@@ -69,8 +69,12 @@ int main() {
     for(pos.x = 0; pos.x < CHUNK_SIZE; pos.x++) {
         for(pos.y = 0; pos.y < CHUNK_SIZE; pos.y++) {
             for(pos.z = 0; pos.z < CHUNK_SIZE; pos.z++) {
-//                float noiseV = noise.noise3f(pos.x/16.0f, pos.y/16.0f, pos.z/16.0f);
-                float noiseV = noise.noise3f(pos.x/20.0f, pos.y/20.0f, pos.z/20.0f);
+//                float noiseV = noise.noise3f(pos.x/20.0f, pos.y/20.0f, pos.z/20.0f);
+//                float noiseV = noise.noise3f(pos.x/10.0f, pos.y/10.0f, pos.z/10.0f);
+                float noiseV = noise.noise3f(pos.x/30.0f, pos.y/30.0f, pos.z/30.0f);
+//                float noiseV = noise.noise3f(pos.x/5.0f, pos.y/5.0f, pos.z/5.0f);
+//                float noiseV = (pos.y % 16 < 3 || pos.x % 16 < 3 || pos.z % 16 < 3 ? 1 : 0);
+                chunkRenderer.noiseThreshold = 0.5f;
                 if(noiseV > chunkRenderer.noiseThreshold)
                     chunkRenderer.chunk->setBlock(pos, Block{DIRT, noiseV});
                 else
