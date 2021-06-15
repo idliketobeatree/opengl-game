@@ -1,5 +1,5 @@
 Lessons learned about how to make a header-file library
-V1.0
+V1f.0
 September 2013 Sean Barrett
 
 Things to do in an stb-style header-file library,

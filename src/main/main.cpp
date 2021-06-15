@@ -72,6 +72,7 @@ int main() {
 //                float noiseV = noise.noise3f(pos.x/20.0f, pos.y/20.0f, pos.z/20.0f);
 //                float noiseV = noise.noise3f(pos.x/10.0f, pos.y/10.0f, pos.z/10.0f);
                 float noiseV = noise.noise3f(pos.x/30.0f, pos.y/30.0f, pos.z/30.0f);
+//                float noiseV = noise.noise3f(pos.x/50.0f, pos.y/150.0f, pos.z/150.0f);
 //                float noiseV = noise.noise3f(pos.x/5.0f, pos.y/5.0f, pos.z/5.0f);
 //                float noiseV = (pos.y % 16 < 3 || pos.x % 16 < 3 || pos.z % 16 < 3 ? 1 : 0);
                 chunkRenderer.noiseThreshold = 0.5f;

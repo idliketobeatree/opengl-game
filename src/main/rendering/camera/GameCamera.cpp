@@ -1,5 +1,7 @@
 #include "GameCamera.hpp"
 
+#include <stdlib.h>
+
 #include <engine/rendering/rendering.hpp>
 #include <settings.hpp>
 #include <logging/logging.hpp>
@@ -20,7 +22,7 @@ void GameCamera::setup() {
 
 void GameCamera::processInput(double dt) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    float cameraSpeed = 5000.0f * dt; // adjust accordingly
+    float cameraSpeed = 20.0f * dt; // adjust accordingly
     bool updateView = false, updateProjection = false;
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -49,6 +51,9 @@ void GameCamera::processInput(double dt) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         position -= up * cameraSpeed;
         updateView = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS) {
+        exit(1);
     }
 
     glfwGetCursorPos(window, &mouseX, &mouseY);

@@ -3,9 +3,13 @@
 #include <math/math.hpp>
 #include <engine/world/block/Block.hpp>
 
-#define CHUNK_SIZE 40
-#define CHUNK_SIZE2 1600
-#define CHUNK_SIZE3 64000
+#define CHUNK_SIZE 200
+#define CHUNK_SIZE2 CHUNK_SIZE*CHUNK_SIZE
+#define CHUNK_SIZE3 CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE
+
+//#define CHUNK_SIZE 128
+//#define CHUNK_SIZE2 16384
+//#define CHUNK_SIZE3 2097152
 
 #define CHUNK_X Chunk::getIndex({1,0,0})
 #define CHUNK_Y Chunk::getIndex({0,1,0})
@@ -19,12 +23,12 @@ public:
     Chunk();
     Chunk(Vector3i position);
 
-    Block getBlock(uint16_t index) const;
+    Block getBlock(uint32_t index) const;
     Block getBlock(Vector3u8 pos) const;
 
-    void setBlock(uint16_t index, Block block);
+    void setBlock(uint32_t index, Block block);
     void setBlock(Vector3u8 pos, Block block);
 
-    static uint16_t getIndex(Vector3u8 pos);
-    static bool outOfBounds(uint16_t index);
+    static uint32_t getIndex(Vector3u8 pos);
+    static bool outOfBounds(uint32_t index);
 };

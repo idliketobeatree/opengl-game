@@ -12,12 +12,14 @@ protected:
     viewPosLoc;
 
     Vector3f *vertList3f;
-    Vector3f *gradList3f;
 
-    static uint16_t *vertListu;
     static uint16_t *edgeTable;
     static uint8_t **triTable;
 public:
+    Vector3f  V0f, V1f, V2f, V3f, V4f, V5f, V6f, V7f;
+    Vector3u8 V0i, V1i, V2i, V3i, V4i, V5i, V6i, V7i;
+    uint32_t  v0,  v1,  v2,  v3,  v4,  v5,  v6,  v7;
+
     Chunk *chunk;
     VertexArray vertices;
 
@@ -25,6 +27,8 @@ public:
 
     VAO vao;
     VBO vbo;
+
+    uint8_t LOD;
 
     float noiseThreshold;
 
@@ -35,11 +39,13 @@ public:
     void setupRender();
     void render(double dt);
 
+    void updateLOD(uint8_t LOD);
+
     void genMesh();
 
     Vector3f vertexInterp(Vector3f a, Vector3f b, float ia, float ib) const;
 //    Vector3f gradInterp(uint16_t i, Vector3f offset) const;
-    Vector3f gradInterp(uint16_t i, Vector3f offset) const;
+    Vector3f gradInterp(uint32_t i, Vector3f offset) const;
     Vector3f gradInterpNoise(Vector3f pos) const;
 //    float gradInterp(float a, float b, float c) const;
 };
