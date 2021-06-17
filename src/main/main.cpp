@@ -7,6 +7,7 @@
 #include <world/block/blocks.hpp>
 
 #include <math/Noise.hpp>
+#include <cstring>
 
 Window window(1680, 950, "OpenGL Window");
 GameRenderer gameRenderer;
@@ -66,20 +67,17 @@ int main() {
     /// get rendering set up
     Vector3u8 pos;
     Noise noise;
+    chunkRenderer.noiseThreshold = 0.0f;
     for(pos.x = 0; pos.x < CHUNK_SIZE; pos.x++) {
-        for(pos.y = 0; pos.y < CHUNK_SIZE; pos.y++) {
-            for(pos.z = 0; pos.z < CHUNK_SIZE; pos.z++) {
-//                float noiseV = noise.noise3f(pos.x/20.0f, pos.y/20.0f, pos.z/20.0f);
-//                float noiseV = noise.noise3f(pos.x/10.0f, pos.y/10.0f, pos.z/10.0f);
-                float noiseV = noise.noise3f(pos.x/30.0f, pos.y/30.0f, pos.z/30.0f);
-//                float noiseV = noise.noise3f(pos.x/50.0f, pos.y/150.0f, pos.z/150.0f);
-//                float noiseV = noise.noise3f(pos.x/5.0f, pos.y/5.0f, pos.z/5.0f);
-//                float noiseV = (pos.y % 16 < 3 || pos.x % 16 < 3 || pos.z % 16 < 3 ? 1 : 0);
-                chunkRenderer.noiseThreshold = 0.5f;
-                if(noiseV > chunkRenderer.noiseThreshold)
-                    chunkRenderer.chunk->setBlock(pos, Block{DIRT, noiseV});
+        for(pos.z = 0; pos.z < CHUNK_SIZE; pos.z++) {
+            float noiseV = noise.noise2f(pos.x/70.0f, pos.z/70.0f)*10+20+noise.noise2f(pos.x/150.0f, pos.z/150.0f)*50+100;
+            for(pos.y = 0; pos.y < CHUNK_SIZE; pos.y++) {
+                if(pos.y < noiseV)
+                    chunkRenderer.chunk->setBlock(pos, Block{DIRT, noiseV-pos.y});
+//                    chunkRenderer.chunk->setBlock(pos, Block{DIRT, 1});
                 else
-                    chunkRenderer.chunk->setBlock(pos, Block{AIR, noiseV});
+                    chunkRenderer.chunk->setBlock(pos, Block{AIR, noiseV-pos.y});
+//                    chunkRenderer.chunk->setBlock(pos, Block{AIR, 0});
             }
         }
     }

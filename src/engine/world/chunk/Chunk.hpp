@@ -7,10 +7,6 @@
 #define CHUNK_SIZE2 CHUNK_SIZE*CHUNK_SIZE
 #define CHUNK_SIZE3 CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE
 
-//#define CHUNK_SIZE 128
-//#define CHUNK_SIZE2 16384
-//#define CHUNK_SIZE3 2097152
-
 #define CHUNK_X Chunk::getIndex({1,0,0})
 #define CHUNK_Y Chunk::getIndex({0,1,0})
 #define CHUNK_Z Chunk::getIndex({0,0,1})

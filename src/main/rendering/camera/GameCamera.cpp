@@ -22,7 +22,7 @@ void GameCamera::setup() {
 
 void GameCamera::processInput(double dt) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    float cameraSpeed = 20.0f * dt; // adjust accordingly
+    float cameraSpeed = 5000.0f * dt; // adjust accordingly
     bool updateView = false, updateProjection = false;
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)

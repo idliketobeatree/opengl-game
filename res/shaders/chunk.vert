@@ -12,7 +12,6 @@ uniform mat4 u_view;
 
 void main() {
     pos = a_pos;
-//    normal = transpose(inverse(mat3(u_view))) * a_normal;
     normal = a_normal;
     color = a_color;
 

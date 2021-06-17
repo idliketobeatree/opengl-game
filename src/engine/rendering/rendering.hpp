@@ -10,6 +10,7 @@
 #include <engine/rendering/shader/ShaderProgram.hpp>
 #include <engine/rendering/shader/Shader.hpp>
 #include <engine/rendering/camera/Camera.hpp>
+#include <engine/rendering/light/Light.hpp>
 
 #include "typedefs.hpp"
 

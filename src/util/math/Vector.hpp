@@ -6,10 +6,10 @@ template <typename T>
 struct Vector3 {
     T x{},y{},z{};
 
-    inline T dot(const Vector3<T> &other) const {
+    inline T dot(const Vector3<T> other) const {
         return this->x * other.x + this->y * other.y + this->z * other.z;
     }
-    inline Vector3<T> cross(const Vector3<T> &other) const {
+    inline Vector3<T> cross(const Vector3<T> other) const {
         return {
                 this->y * other.z - this->z * other.y,
                 this->z * other.x - this->x * other.z,
@@ -17,14 +17,14 @@ struct Vector3 {
         };
     }
 
-    Vector3<T> operator +(const Vector3<T> &other) const {
+    Vector3<T> operator +(const Vector3<T> other) const {
         return {
                 this->x + other.x,
                 this->y + other.y,
                 this->z + other.z
         };
     }
-    void operator +=(const Vector3<T> &other) {
+    void operator +=(const Vector3<T> other) {
         this->x += other.x;
         this->y += other.y;
         this->z += other.z;
@@ -42,10 +42,9 @@ struct Vector3 {
         this->y *= scalar;
         this->z *= scalar;
     }
-    friend Vector3<T> operator *(const T scalar, const Vector3<T> &vector) {
+    friend Vector3<T> operator *(const T scalar, const Vector3<T> vector) {
         return vector * scalar;
     }
-
     Vector3<T> operator /(const T scalar) const {
         return {
                 this->x / scalar,
@@ -58,30 +57,30 @@ struct Vector3 {
         this->y /= scalar;
         this->z /= scalar;
     }
-    friend Vector3<T> operator /(const T scalar, const Vector3<T> &vector) {
+    friend Vector3<T> operator /(const T scalar, const Vector3<T> vector) {
         return vector / scalar;
     }
 
-    Vector3<T> operator -(const Vector3<T> &other) const {
+    Vector3<T> operator -(const Vector3<T> other) const {
         return {
                 this->x - other.x,
                 this->y - other.y,
                 this->z - other.z
         };
     }
-    void operator -=(const Vector3<T> &other) {
+    void operator -=(const Vector3<T> other) {
         this->x -= other.x;
         this->y -= other.y;
         this->z -= other.z;
     }
 
-    static inline Vector3<T> cross(const Vector3<T> &a, const Vector3<T> &b) {
+    static inline Vector3<T> cross(const Vector3<T> a, const Vector3<T> b) {
         return a.cross(b);
     }
-    static inline Vector3<T> dot(const Vector3<T> &a, const  Vector3<T> &b) {
+    static inline Vector3<T> dot(const Vector3<T> a, const  Vector3<T> b) {
         return a.dot(b);
     }
-    static inline Vector3<T> normalize(const Vector3<T> &a) {
+    static inline Vector3<T> normalize(const Vector3<T> a) {
         Vector3<T> out;
         T mag = a.magnitude();
         out.x = a.x/mag;

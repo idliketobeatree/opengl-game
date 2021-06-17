@@ -6,24 +6,22 @@
 class ChunkRenderer: public Renderer {
 protected:
     ShaderProgram program;
-    UniformLoc viewLoc, mvpLoc,
-    lightColorLoc, lightPosLoc, lightStrengthLoc,
-    ambientLightColorLoc, ambientLightStrengthLoc,
-    viewPosLoc;
+    UniformLoc viewLoc, mvpLoc,viewPosLoc;
 
     Vector3f *vertList3f;
 
     static uint16_t *edgeTable;
     static uint8_t **triTable;
 public:
+    DirectionalLight sun;
+    Spotlight flashlight;
+
     Vector3f  V0f, V1f, V2f, V3f, V4f, V5f, V6f, V7f;
     Vector3u8 V0i, V1i, V2i, V3i, V4i, V5i, V6i, V7i;
     uint32_t  v0,  v1,  v2,  v3,  v4,  v5,  v6,  v7;
 
     Chunk *chunk;
     VertexArray vertices;
-
-    Vector3f lightPos;
 
     VAO vao;
     VBO vbo;

@@ -5,9 +5,8 @@
 #include <rendering/rendering.hpp>
 #include <logging/logging.hpp>
 #include <numeric>
-#include <iostream>
 
-ChunkRenderer::ChunkRenderer(Chunk *chunk, float noiseThreshold): chunk(chunk), noiseThreshold(noiseThreshold) {
+ChunkRenderer::ChunkRenderer(Chunk *chunk, float noiseThreshold): chunk(chunk), flashlight("flashlight"), sun("sun"), noiseThreshold(noiseThreshold) {
     vertList3f = new Vector3f[12];
     updateLOD(2);
 }
@@ -17,25 +16,82 @@ void ChunkRenderer::render(double dt) {
     glBindVertexArray(vao);
 
     Matrix4f mvp = camera.view * camera.projection;
-    Vector3f ambient = {1, 1, 1};
-    Vector3f color = {(float)sin(glfwGetTime()), 1, 1};
-//    Vector3f lightPos = {20,100,20};
-    Vector3f lightPos = {(float)sin(glfwGetTime())*5000.0f,15,(float)cos(glfwGetTime())*5000.0f};
-//    Vector3f lightPos = camera.position;
+    sun.direction = {(float)sin(glfwGetTime()/5), (float)cos(glfwGetTime()/5), 0};
+//    sun.direction = Vector3f::normalize({1, 1, 0});
+    flashlight.position = camera.position;
+    flashlight.direction = camera.direction;
 
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp);
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, camera.view);
-
-    glUniform3fv(ambientLightColorLoc, 1, ambient);
-    glUniform1f (ambientLightStrengthLoc, 0.00f);
-
-    glUniform3fv(lightPosLoc, 1, lightPos);
-    glUniform3fv(lightColorLoc, 1, color);
-    glUniform1f (lightStrengthLoc, 1.0f);
-
     glUniform3fv(viewPosLoc, 1, camera.position);
 
+    flashlight.setAll();
+    sun.setAll();
+
     glDrawArrays(GL_TRIANGLES, 0, 1000000);
+}
+void ChunkRenderer::setupRender() {
+    Shader vert(GL_VERTEX_SHADER, "res/shaders/chunk.vert");
+    Shader frag(GL_FRAGMENT_SHADER, "res/shaders/chunk.frag");
+
+    program.createProgram();
+    program.attachShader(vert);
+    program.attachShader(frag);
+    program.linkProgram();
+
+    vert.deleteShader();
+    frag.deleteShader();
+
+    /// chunk
+
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+
+    glBindVertexArray(vao);
+
+    generateMesh();
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*27*CHUNK_SIZE3, vertices, GL_STATIC_DRAW);
+
+    // coords
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) 0);
+    glEnableVertexAttribArray(0);
+    // normals
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    // colors
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) (6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    mvpLoc = glGetUniformLocation(program, "u_mvp");
+    viewLoc = glGetUniformLocation(program, "u_view");
+    viewPosLoc = glGetUniformLocation(program, "u_viewPos");
+
+    sun.getLocs(program);
+    sun.ambientColor = {1, 1, 1};
+    sun.ambientStrength = 0.005f;
+    sun.diffuseColor = {1, 0.9, 0.8};
+    sun.diffuseStrength = 0.8f;
+    sun.specularColor = {1, 1, 1};
+    sun.specularStrength = 1.25f;
+    sun.setAll();
+
+    flashlight.getLocs(program);
+    flashlight.cutoff = cos(TAU/24);
+    flashlight.outerCutoff = cos(TAU/16);
+
+    flashlight.constant  = 1.0f;
+    flashlight.linear    = 0.014f;
+    flashlight.quadratic = 0.0007f;
+
+    flashlight.ambientColor = {0, 0, 0};
+    flashlight.ambientStrength = 0.00f;
+    flashlight.diffuseColor = {0.9, 0.95, 1.0};
+    flashlight.diffuseStrength = 1.0f;
+    flashlight.specularColor = {1, 1, 1};
+    flashlight.specularStrength = 1.25f;
+    flashlight.setAll();
 }
 void ChunkRenderer::updateLOD(uint8_t LOD) {
     this->LOD  = LOD;
@@ -70,55 +126,6 @@ void ChunkRenderer::updateLOD(uint8_t LOD) {
     v5 = Chunk::getIndex(V5i);
     v6 = Chunk::getIndex(V6i);
     v7 = Chunk::getIndex(V7i);
-}
-void ChunkRenderer::setupRender() {
-    this->lightPos = {0,0,0};
-
-    Shader vert(GL_VERTEX_SHADER, "res/shaders/chunk.vert");
-    Shader frag(GL_FRAGMENT_SHADER, "res/shaders/chunk.frag");
-
-    program.createProgram();
-    program.attachShader(vert);
-    program.attachShader(frag);
-    program.linkProgram();
-
-    vert.deleteShader();
-    frag.deleteShader();
-
-    /// chunk
-
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    glBindVertexArray(vao);
-
-    generateMesh();
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*27*CHUNK_SIZE3, vertices, GL_STATIC_DRAW);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9*6*6, verticesccc, GL_STATIC_DRAW);
-
-    // coords
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) 0);
-    glEnableVertexAttribArray(0);
-    // normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) (3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // colors
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*) (6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    mvpLoc = glGetUniformLocation(program, "u_mvp");
-    viewLoc = glGetUniformLocation(program, "u_view");
-
-    lightColorLoc = glGetUniformLocation(program, "u_lightColor");
-    lightPosLoc = glGetUniformLocation(program, "u_lightPos");
-    lightStrengthLoc = glGetUniformLocation(program, "u_lightStrength");
-
-    ambientLightColorLoc = glGetUniformLocation(program, "u_ambientLightColor");
-    ambientLightStrengthLoc = glGetUniformLocation(program, "u_ambientLightStrength");
-
-    viewPosLoc = glGetUniformLocation(program, "u_viewPos");
 }
 void ChunkRenderer::generateMesh() {
     vertices = new float[CHUNK_SIZE3*100];
@@ -193,9 +200,6 @@ void ChunkRenderer::generateMesh() {
                     vertices[j+3] = gradInterp(i, vertList3f[triTable[cubeIndex][k+1]]).x;
                     vertices[j+4] = gradInterp(i, vertList3f[triTable[cubeIndex][k+1]]).y;
                     vertices[j+5] = gradInterp(i, vertList3f[triTable[cubeIndex][k+1]]).z;
-//                    vertices[j+3] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 1]]).x;
-//                    vertices[j+4] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 1]]).y;
-//                    vertices[j+5] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 1]]).z;
 
                     // color
                     vertices[j+6]  = 1.0f;
@@ -211,9 +215,6 @@ void ChunkRenderer::generateMesh() {
                     vertices[j+12] = gradInterp(i, vertList3f[triTable[cubeIndex][k+2]]).x;
                     vertices[j+13] = gradInterp(i, vertList3f[triTable[cubeIndex][k+2]]).y;
                     vertices[j+14] = gradInterp(i, vertList3f[triTable[cubeIndex][k+2]]).z;
-//                    vertices[j+12] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 2]]).x;
-//                    vertices[j+13] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 2]]).y;
-//                    vertices[j+14] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 2]]).z;
 
                     // color
                     vertices[j+15] = 1.0f;
@@ -229,9 +230,6 @@ void ChunkRenderer::generateMesh() {
                     vertices[j+21] = gradInterp(i, vertList3f[triTable[cubeIndex][k+3]]).x;
                     vertices[j+22] = gradInterp(i, vertList3f[triTable[cubeIndex][k+3]]).y;
                     vertices[j+23] = gradInterp(i, vertList3f[triTable[cubeIndex][k+3]]).z;
-//                    vertices[j+21] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 3]]).x;
-//                    vertices[j+22] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 3]]).y;
-//                    vertices[j+23] = gradInterpNoise(globalPos + vertList3f[triTable[cubeIndex][k + 3]]).z;
 
                     // color
                     vertices[j+24] = 1.0f;
@@ -247,46 +245,15 @@ void ChunkRenderer::generateMesh() {
 Vector3f ChunkRenderer::vertexInterp(Vector3f a, Vector3f b, float ia, float ib) const {
     return a + (this->noiseThreshold - ia) / (ib - ia) * (b-a);
 }
-Vector3f ChunkRenderer::gradInterpNoise(Vector3f offset) const {
-    Noise noise;
-    return {
-            (noise.noise3f((offset.x - 1) / 30.0f, (offset.y) / 30.0f, (offset.z) / 30.0f) -
-             noise.noise3f((offset.x + 1) / 30.0f, (offset.y) / 30.0f, (offset.z) / 30.0f)),
-            (noise.noise3f((offset.x) / 30.0f, (offset.y - 1) / 30.0f, (offset.z) / 30.0f) -
-             noise.noise3f((offset.x) / 30.0f, (offset.y + 1) / 30.0f, (offset.z) / 30.0f)),
-            (noise.noise3f((offset.x) / 30.0f, (offset.y) / 30.0f, (offset.z - 1) / 30.0f) -
-             noise.noise3f((offset.x) / 30.0f, (offset.y) / 30.0f, (offset.z + 1) / 30.0f))
-    };
-}
 Vector3f ChunkRenderer::gradInterp(uint32_t i, Vector3f offset) const {
     uint32_t realI = i + Chunk::getIndex({(uint8_t)round(offset.x), (uint8_t)round(offset.y), (uint8_t)round(offset.z)});
 
-    return {
+    return Vector3f::normalize({
             this->chunk->getBlock(realI-Chunk::getIndex({1,0,0})).influence - this->chunk->getBlock(realI+Chunk::getIndex({1,0,0})).influence,
             this->chunk->getBlock(realI-Chunk::getIndex({0,1,0})).influence - this->chunk->getBlock(realI+Chunk::getIndex({0,1,0})).influence,
             this->chunk->getBlock(realI-Chunk::getIndex({0,0,1})).influence - this->chunk->getBlock(realI+Chunk::getIndex({0,0,1})).influence
-    };
-//    return {
-//            lerp(
-//                    this->chunk->getBlock(realI-Chunk::getIndex({1,0,0})).influence - this->chunk->getBlock(realI+Chunk::getIndex({1,0,0})).influence,
-//                    this->chunk->getBlock(realI-Chunk::getIndex({0,0,0})).influence - this->chunk->getBlock(realI+Chunk::getIndex({2,0,0})).influence,
-//                    offset.x / LOD
-//            ),
-//            lerp(
-//                    this->chunk->getBlock(realI-Chunk::getIndex({0,1,0})).influence - this->chunk->getBlock(realI+Chunk::getIndex({0,1,0})).influence,
-//                    this->chunk->getBlock(realI-Chunk::getIndex({0,0,0})).influence - this->chunk->getBlock(realI+Chunk::getIndex({0,2,0})).influence,
-//                    offset.y / LOD
-//            ),
-//            lerp(
-//                    this->chunk->getBlock(realI-Chunk::getIndex({0,0,1})).influence - this->chunk->getBlock(realI+Chunk::getIndex({0,0,1})).influence,
-//                    this->chunk->getBlock(realI-Chunk::getIndex({0,0,0})).influence - this->chunk->getBlock(realI+Chunk::getIndex({0,0,2})).influence,
-//                    offset.z / LOD
-//            )
-//    };
+    });
 }
-//float ChunkRenderer::gradInterp(float a, float b, float c) const {
-//    return a + (c) * (b-a);
-//}
 uint8_t** ChunkRenderer::triTable = new uint8_t*[256]{
         new uint8_t[]{0},
         new uint8_t[]{3, 0, 8, 3},

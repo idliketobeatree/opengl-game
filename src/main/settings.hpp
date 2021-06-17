@@ -6,5 +6,5 @@ namespace settings {
     double near = 0.1;
     double far = 2048;
 
-    double sensitivity = 0.03;
+    double sensitivity = 30.0;
 }
