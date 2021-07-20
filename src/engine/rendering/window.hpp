@@ -13,12 +13,12 @@ struct Window {
 
     Window(const int xSize, const int ySize, const char *title) : xSize(xSize), ySize(ySize), title(title) {}
 
-    inline bool create() {
+    bool create() {
         ptr = glfwCreateWindow(xSize, ySize, title, NULL, NULL);
         return ptr;
     }
 
-    inline operator GLFWwindow*() const {
+    operator GLFWwindow*() const {
         return ptr;
     }
 };

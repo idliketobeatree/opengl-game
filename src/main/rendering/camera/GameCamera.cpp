@@ -22,7 +22,7 @@ void GameCamera::setup() {
 
 void GameCamera::processInput(double dt) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    float cameraSpeed = 5000.0f * dt; // adjust accordingly
+    float cameraSpeed = 500.0f * dt; // adjust accordingly
     bool updateView = false, updateProjection = false;
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -48,7 +48,7 @@ void GameCamera::processInput(double dt) {
         position += up * cameraSpeed;
         updateView = true;
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
         position -= up * cameraSpeed;
         updateView = true;
     }

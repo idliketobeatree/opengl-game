@@ -7,14 +7,14 @@ Block Chunk::getBlock(Vector3u8 pos) const {
     return this->blocks[getIndex(pos)];
 }
 Block Chunk::getBlock(uint32_t index) const {
-    return this->blocks[index < CHUNK_SIZE3 ? index : CHUNK_SIZE3-1];
+    return this->blocks[index];
 }
 
 void Chunk::setBlock(Vector3u8 pos, Block block) {
     this->blocks[this->getIndex(pos)] = block;
 }
 void Chunk::setBlock(uint32_t index, Block block) {
-    this->blocks[index < CHUNK_SIZE3 ? index : CHUNK_SIZE3-1] = block;
+    this->blocks[index] = block;
 }
 
 uint32_t Chunk::getIndex(Vector3u8 pos) {

@@ -3,9 +3,9 @@
 #include <math/math.hpp>
 #include <engine/world/block/Block.hpp>
 
-#define CHUNK_SIZE 200
-#define CHUNK_SIZE2 CHUNK_SIZE*CHUNK_SIZE
-#define CHUNK_SIZE3 CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE
+#define CHUNK_SIZE  128
+#define CHUNK_SIZE2 (CHUNK_SIZE*CHUNK_SIZE)
+#define CHUNK_SIZE3 (CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE)
 
 #define CHUNK_X Chunk::getIndex({1,0,0})
 #define CHUNK_Y Chunk::getIndex({0,1,0})

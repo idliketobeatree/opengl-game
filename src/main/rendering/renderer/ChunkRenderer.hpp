@@ -5,32 +5,66 @@
 
 class ChunkRenderer: public Renderer {
 protected:
+    struct Edge {
+        uint8_t a,b;
+    };
+    enum class Dir : uint8_t {
+        X, Y, Z
+    };
+    struct ChunkEdgeVertexCoord {
+        Vector3u8 pos;
+        Dir dir;
+
+        uint32_t value() const;
+        bool operator<(ChunkEdgeVertexCoord other) const;
+    };
+
+    static uint16_t *edgeTable;
+    static uint8_t **triTable;
+
     ShaderProgram program;
     UniformLoc viewLoc, mvpLoc,viewPosLoc;
 
     Vector3f *vertList3f;
 
-    static uint16_t *edgeTable;
-    static uint8_t **triTable;
+    ChunkEdgeVertexCoord getChunkEdgeVertexCoord(Vector3u8 pos, Edge edge) const;
+    void calculateVertices(uint32_t i, uint16_t edge);
 public:
-    DirectionalLight sun;
-    Spotlight flashlight;
+    struct Vertex {
+        Vector3f pos;
+        Vector3f normal;
+        Vector3f color;
+    };
 
-    Vector3f  V0f, V1f, V2f, V3f, V4f, V5f, V6f, V7f;
-    Vector3u8 V0i, V1i, V2i, V3i, V4i, V5i, V6i, V7i;
-    uint32_t  v0,  v1,  v2,  v3,  v4,  v5,  v6,  v7;
+    static Edge edges[12];
+    Vector3u8 *cornersV[8];
+    uint32_t  *cornersU[8];
 
     Chunk *chunk;
-    VertexArray vertices;
+
+    Vector3u8 V0,V1,V2,V3,V4,V5,V6,V7;
+    uint32_t  v0,v1,v2,v3,v4,v5,v6,v7;
+
+    float noiseThreshold;
+
+    uint8_t LOD;
+
+    Vertex *vertices;
+    uint32_t verticesSize;
+    uint32_t *indices;
+    uint32_t indicesSize;
 
     VAO vao;
     VBO vbo;
 
-    uint8_t LOD;
+    EBO ebo;
 
-    float noiseThreshold;
+
+    Spotlight flashlight;
+    DirectionalLight sun;
 
     ChunkRenderer(Chunk *chunk, float noiseThreshold);
+    ~ChunkRenderer();
 
     void generateMesh();
 
@@ -39,11 +73,6 @@ public:
 
     void updateLOD(uint8_t LOD);
 
-    void genMesh();
-
     Vector3f vertexInterp(Vector3f a, Vector3f b, float ia, float ib) const;
-//    Vector3f gradInterp(uint16_t i, Vector3f offset) const;
     Vector3f gradInterp(uint32_t i, Vector3f offset) const;
-    Vector3f gradInterpNoise(Vector3f pos) const;
-//    float gradInterp(float a, float b, float c) const;
 };

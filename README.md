@@ -6,7 +6,8 @@ Hoping to make an actual game in the future!
 ## Resources used to learn:
 + [learnopengl](https://learnopengl.com/) is great for getting into 3D
 + [RXI's log.c](https://github.com/rxi/log.c) was very helpful for creating my logger, and a nice introduction to variadic functions in C++
-+ [Paul Bourke's article on marching cubes](http://www.paulbourke.net/geometry/polygonise/) was a great resource to learn marching cubes! (not currently implemented here yet)
++ [Paul Bourke's article on marching cubes](http://www.paulbourke.net/geometry/polygonise/) was a great resource to learn marching cubes!
++ [PolyVox's](http://www.volumesoffun.com/polyvox-about/index.html) alternative MC tables allow bitwise arithmetic which helped for implementing EBOs
 + and last but not least, [The Cherno's OpenGL series](https://youtube.com/playlist?list=PLlrATfBNZ98dudnM48yfGUldqGD0S4FFb) is a great visual/auditory explanation for the basics of OpenGL!
 
 ## External libraries used:

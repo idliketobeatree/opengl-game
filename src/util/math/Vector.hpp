@@ -1,10 +1,8 @@
 #pragma once
 
-// TODO: let Vectors convert number types. Not sure how right now.
-
 template <typename T>
 struct Vector3 {
-    T x{},y{},z{};
+    T x, y, z;
 
     inline T dot(const Vector3<T> other) const {
         return this->x * other.x + this->y * other.y + this->z * other.z;
@@ -74,6 +72,34 @@ struct Vector3 {
         this->z -= other.z;
     }
 
+    bool operator <(const Vector3<T> other) {
+        return this->x < other.x && this->y < other.y && this->z < other.z;
+    }
+    bool operator <=(const Vector3<T> other) {
+        return this->x <= other.x && this->y <= other.y && this->z <= other.z;
+    }
+
+    bool operator >(const Vector3<T> other) {
+        return this->x > other.x && this->y > other.y && this->z > other.z;
+    }
+    bool operator >=(const Vector3<T> other) {
+        return this->x >= other.x && this->y >= other.y && this->z >= other.z;
+    }
+
+    bool operator <(const T other) {
+        return this->x < other && this->y < other && this->z < other;
+    }
+    bool operator <=(const T other) {
+        return this->x <= other && this->y <= other && this->z <= other;
+    }
+
+    bool operator >(const T other) {
+        return this->x > other && this->y > other && this->z > other;
+    }
+    bool operator >=(const T other) {
+        return this->x >= other && this->y >= other && this->z >= other;
+    }
+
     static inline Vector3<T> cross(const Vector3<T> a, const Vector3<T> b) {
         return a.cross(b);
     }
@@ -95,5 +121,11 @@ struct Vector3 {
 
     operator T* () {
         return &x;
+    }
+
+    template<typename T2>
+    operator Vector3<T2>() const
+    {
+        return Vector3<T2>{this->x, this->y, this->z};
     }
 };

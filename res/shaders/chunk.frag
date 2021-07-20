@@ -43,6 +43,7 @@ void main() {
 //    point();
 //    spot();
     fragColor = vec4((directional(sun) + spot(flashlight)) * color, 1);
+//  fragColor = vec4(color, 1);
 }
 
 

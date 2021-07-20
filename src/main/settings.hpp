@@ -1,10 +1,11 @@
 #pragma once
 
-/// TODO: load from file
+/// TODO: save & load from file
 namespace settings {
-    double fov = 1;
     double near = 0.1;
     double far = 2048;
 
-    double sensitivity = 30.0;
+    double fov = TAU/4;
+
+    double sensitivity = 0.8;
 }
